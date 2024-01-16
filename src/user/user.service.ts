@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -20,27 +20,30 @@ export class UserService {
   getAllUsers(): Promise<User[]> {
     return this.userRepository.find();
   }
+  async findByUsername(username: string): Promise<User> {
+    return this.userRepository.findOne({ where: { username } });
+  }
 
   private async hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);
   }
 
   async create(signupDto: SignupDto): Promise<User> {
-    const { email, password, username } = signupDto;
     const user = new User();
+    user.username = signupDto.username;
+    user.email = signupDto.email;
+    user.salt = await bcrypt.genSalt(); // Генерация соли
+    user.password = await bcrypt.hash(signupDto.password, user.salt); // Хэширование пароля
+    await user.save();
+    return user;
+  }
 
-    try {
-      user.salt = await bcrypt.genSalt(10); // Specify the number of rounds for salt generation
-      user.password = await this.hashPassword(password, user.salt);
-
-      user.email = email;
-      user.username = username;
-
-      await user.save();
-      return user;
-    } catch (error) {
-      throw error;
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+    return user;
   }
 
   async signIn(loginDto: LoginDto): Promise<LoginResponseDto> {

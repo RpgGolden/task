@@ -1,5 +1,3 @@
 import { TaskEntity } from '../entities/task.entity';
 
-export class TaskDto extends TaskEntity {
-
-}
+export class TaskDto extends TaskEntity {}

@@ -3,7 +3,6 @@ import { TaskService } from './task.service';
 import { TaskController } from './task.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaskEntity } from './entities/task.entity';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({

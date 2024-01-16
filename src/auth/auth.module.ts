@@ -8,7 +8,6 @@ import { jwtConstants } from './constants';
 import { User } from './entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { JwtStrategy } from './jwt.strategy';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   exports: [JwtModule, PassportModule],
