@@ -59,4 +59,18 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Credentials!');
     }
   }
+
+  // Need check token, if it is valid and return
+  async validateUser(token: string): Promise<User> {
+    try {
+      const decoded = this.jwtService.verify(token);
+      const user = await this.userService.findById(decoded.sub);
+      if (!user) {
+        throw new UnauthorizedException('Invalid token');
+      }
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }
